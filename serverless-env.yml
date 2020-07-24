@@ -1,0 +1,8 @@
+dev:
+  NODE_ENV  : 'staging'
+
+staging:
+  NODE_ENV  : 'staging'
+
+prod:
+  NODE_ENV  : 'production'

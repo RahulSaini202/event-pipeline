@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "outDir": "dist",
+    "sourceMap": true,
+    "allowJs": true,
+    //"noUnusedLocals": true,
+    //"noUnusedParameters": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "*.ts",
+    "src/*.ts", "src/events/esconnector.js"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "typeRoots": [
+    "node_modules/@types"
+  ],
+  "lib": [
+    "es2016",
+    "dom"
+  ]
+}

@@ -1,0 +1,368 @@
+service:
+  name: capture-events
+
+# # Add the serverless-webpack plugin
+# plugins:
+#   - serverless-webpack
+
+# provider:
+#   name: aws
+#   runtime: nodejs8.10
+
+# functions:
+#   hello:
+#     handler: handler.hello
+#     events:
+#       - http:
+#           method: get
+#           path: hello
+
+
+# Add the serverless-webpack plugin
+plugins:  
+  - serverless-webpack
+  - serverless-offline 
+
+custom:
+  webpack:
+    includeModules: true
+  defaultStage : dev
+  currentStage : "${opt:stage, self:custom.defaultStage}"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${self:custom.currentStage}
+  region: ap-south-1
+  memorySize: 128
+  versionFunctions: false   # very important, it will remove the exiting code from s3 bicket which has a limit of 75GB
+  timeout: 60
+  environment: ${file(serverless-env.yml):${self:provider.stage}}
+  # vpc:
+  #   securityGroupIds:
+  #     - sg-0d90e7e66021d48e6
+  #   subnetIds:
+  #     - subnet-0a4ab808fabd8f6ea  
+  #     - subnet-015994d38258a7376  
+
+
+functions:
+  
+  dc-push-events:
+    handler: src/events/handler.pushEvents
+    events:
+      - http:
+          method: post
+          path: events/push-events
+
+  dataTransferToS3:
+    handler: src/events/handler.dataTransferToS3
+    memorySize: 1024
+    timeout: 120
+    events:
+      - http:
+          method: post
+          path: events/dataTransferToS3
+          cors: 
+            origin: '*' # <-- Specify allowed origin 
+            headers: # <-- Specify allowed headers 
+              - Content-Type 
+              - X-Amz-Date 
+              - Authorization 
+              - X-Api-Key 
+              - X-Amz-Security-Token 
+              - X-Amz-User-Agent 
+            allowCredentials: false
+  
+  labFetchingData:
+    handler: src/events/handler.labFetchingData
+    events:
+      - http:
+          method: post
+          path: events/labFetchingData
+          cors: 
+          origin: '*' # <-- Specify allowed origin 
+          headers: # <-- Specify allowed headers 
+            - Content-Type 
+            - X-Amz-Date 
+            - Authorization 
+            - X-Api-Key 
+            - X-Amz-Security-Token 
+            - X-Amz-User-Agent 
+          allowCredentials: false
+
+
+  getAggDataFromES:
+    handler: src/events/handler.getAggregatedDataFromES
+    events:
+      - http:
+          method: post
+          path: events/get-events-agg-data
+          cors: 
+            origin: '*' # <-- Specify allowed origin 
+            headers: # <-- Specify allowed headers 
+              - Content-Type 
+              - X-Amz-Date 
+              - Authorization 
+              - X-Api-Key 
+              - X-Amz-Security-Token 
+              - X-Amz-User-Agent 
+            allowCredentials: false
+  
+  getEventDataFromEthena:
+    handler: src/events/handler.getDataFromEthena
+    events:
+      - http:
+          method: post
+          path: events/fetch-events
+          cors: 
+          origin: '*' # <-- Specify allowed origin 
+          headers: # <-- Specify allowed headers 
+            - Content-Type 
+            - X-Amz-Date 
+            - Authorization 
+            - X-Api-Key 
+            - X-Amz-Security-Token 
+            - X-Amz-User-Agent 
+          allowCredentials: false
+   
+
+  deleteEventData:
+    handler: src/events/handler.deleteEventsFromBackupES
+    events:
+      - http:
+          method: post
+          path: events/deleteEvents
+          cors: 
+          origin: '*' # <-- Specify allowed origin 
+          headers: # <-- Specify allowed headers 
+            - Content-Type 
+            - X-Amz-Date 
+            - Authorization 
+            - X-Api-Key 
+            - X-Amz-Security-Token 
+            - X-Amz-User-Agent 
+          allowCredentials: false
+
+  
+  migrateEventsFromEsToS3:
+    handler: src/events/handler.migrateEvents
+    events:
+      - http:
+          method: post
+          path: events/migrateEvents
+  
+  labData:
+    handler: src/events/handler.labData
+    events:
+      - http:
+          method: post
+          path: events/labData
+          cors: 
+          origin: '*' # <-- Specify allowed origin 
+          headers: # <-- Specify allowed headers 
+            - Content-Type 
+            - X-Amz-Date 
+            - Authorization 
+            - X-Api-Key 
+            - X-Amz-Security-Token 
+            - X-Amz-User-Agent 
+          allowCredentials: false
+
+  whatsappDataTransferToS3:
+    handler: src/events/handler.whatsappDataTransferToS3
+    memorySize: 1024
+    timeout: 120
+    events:
+      - http:
+          method: post
+          path: events/whatsappDataTransferToS3
+          cors: 
+            origin: '*' # <-- Specify allowed origin 
+            headers: # <-- Specify allowed headers 
+              - Content-Type 
+              - X-Amz-Date 
+              - Authorization 
+              - X-Api-Key 
+              - X-Amz-Security-Token 
+              - X-Amz-User-Agent 
+            allowCredentials: false
+
+  createIndex:
+    handler: src/events/handler.createIndex
+    memorySize: 1024
+    timeout: 120
+    events:
+      - http:
+          method: post
+          path: create/index
+          cors: 
+            origin: '*' # <-- Specify allowed origin 
+            headers: # <-- Specify allowed headers 
+              - Content-Type 
+              - X-Amz-Date 
+              - Authorization 
+              - X-Api-Key 
+              - X-Amz-Security-Token 
+              - X-Amz-User-Agent 
+            allowCredentials: false
+
+  migrateWhatsAppEvents:
+    handler: src/events/handler.migrateWhatsAppEvents
+    events:
+      - http:
+          method: post
+          path: events/migrateWhatsAppEvents
+  
+  migrateEs:
+    handler: src/events/handler.migrateEs
+    memorySize: 1024
+    timeout: 120
+    events:
+      - http:
+          method: post
+          path: migrateEs
+          cors: 
+            origin: '*' # <-- Specify allowed origin 
+            headers: # <-- Specify allowed headers 
+              - Content-Type 
+              - X-Amz-Date 
+              - Authorization 
+              - X-Api-Key 
+              - X-Amz-Security-Token 
+              - X-Amz-User-Agent 
+            allowCredentials: false
+    
+  deleteDataFromES:
+    handler: src/events/handler.deleteDataFromES
+    memorySize: 1024
+    timeout: 120
+    events:
+      - http:
+          method: post
+          path: deleteDataFromES
+          cors: 
+            origin: '*' # <-- Specify allowed origin 
+            headers: # <-- Specify allowed headers 
+              - Content-Type 
+              - X-Amz-Date 
+              - Authorization 
+              - X-Api-Key 
+              - X-Amz-Security-Token 
+              - X-Amz-User-Agent 
+            allowCredentials: false
+
+  eventMigrationData:
+    handler: src/events/handler.eventMigrationData
+    events:
+      - http:
+          method: post
+          path: eventMigrationData
+          cors: 
+          origin: '*' # <-- Specify allowed origin 
+          headers: # <-- Specify allowed headers 
+            - Content-Type 
+            - X-Amz-Date 
+            - Authorization 
+            - X-Api-Key 
+            - X-Amz-Security-Token 
+            - X-Amz-User-Agent 
+          allowCredentials: false
+
+  eventsTransferToS3:
+    handler: src/events/handler.eventsTransferToS3
+    memorySize: 1024
+    timeout: 120
+    events:
+      - http:
+          method: post
+          path: eventsTransferToS3
+          cors: 
+            origin: '*' # <-- Specify allowed origin 
+            headers: # <-- Specify allowed headers 
+              - Content-Type 
+              - X-Amz-Date 
+              - Authorization 
+              - X-Api-Key 
+              - X-Amz-Security-Token 
+              - X-Amz-User-Agent 
+            allowCredentials: false
+  
+  dailyEventsMigration:
+    handler: src/events/handler.dailyEventsMigration
+    events:
+      - http:
+          method: post
+          path: dailyEventsMigration
+
+  getCampaignList:
+    handler:  src/events/handler.getCampaignList
+    events:
+      - http:
+          method: post
+          path: getCampaignList
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+
+  getDownloadData:
+    handler: src/events/handler.getDownloadData
+    events:
+      - http:
+          method: post
+          path: getDownloadData
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+            
+  addBitlink:
+    handler: src/events/handler.addBitlink
+    events:
+      - http:
+          method: post
+          path: addBitlink
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+   
+
+  bitlinkBatchWrite:
+    handler: src/events/handler.bitlinkBatchWrite
+    
+  getStats:
+    handler: src/events/handler.getStats
+    events:
+      - http:
+          method: post
+          path: getStats
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
