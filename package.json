@@ -11,7 +11,7 @@
     "@types/aws-lambda": "8.10.34",
     "@types/node": "^10.17.2",
     "athena-express": "^5.1.1",
-    "aws-sdk": "^2.560.0",
+    "aws-sdk": "^2.814.0",
     "del": "3.0.0",
     "elasticsearch": "^16.4.0",
     "elasticsearch-scroll-stream": "^1.2.1",
