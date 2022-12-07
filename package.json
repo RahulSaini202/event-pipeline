@@ -23,7 +23,7 @@
     "moment": "2.24.0",
     "moment-timezone": "^0.5.27",
     "node-ses": "2.1.0",
-    "serverless": "^1.56.0",
+    "serverless": "^3.25.1",
     "serverless-plugin-typescript": "^1.1.9",
     "serverless-webpack": "^5.3.1",
     "source-map-support": "^0.5.16",
