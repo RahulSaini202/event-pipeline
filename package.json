@@ -27,10 +27,10 @@
     "serverless-plugin-typescript": "^1.1.9",
     "serverless-webpack": "^5.3.1",
     "source-map-support": "^0.5.16",
-    "ts-loader": "^5.4.5",
+    "ts-loader": "^9.4.2",
     "typescript": "^3.6.4",
     "uuidv1": "^1.6.14",
-    "webpack": "^4.41.2",
+    "webpack": "^5.75.0",
     "webpack-node-externals": "1.7.2"
   },
   "devDependencies": {
